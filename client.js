@@ -40,42 +40,45 @@ class MPVClient extends BasicMPVClient {
                 this.proxy = new Proxy(this, {
                         get: this._get
                 });
+                this.cache = {};
                 return this.proxy;
         }
         
         _get(target, property, receiver) {
                 if (property in target) {
                         return target[property];
+                } else if (property in target.cache) {
+                        return target.cache[property];
                 } else if (IPC_COMMANDS.includes(property.toLowerCase())) {
-                        property = toSnakeCase(property);
-                        return function(...args) { return target.command(property, ...args); };
+                        let prop = toSnakeCase(property);
+                        return target.cache[property] = function(...args) { return target.command(prop, ...args); };
                 } else if (property.startsWith("on")) {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.on(property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.on(prop, ...args); };
                 } else if (property.startsWith("off")) {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.off(property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.off(prop, ...args); };
                 } else if (property.startsWith("get")) {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.command("get_property", property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.command("get_property", prop, ...args); };
                 } else if (property.startsWith("set")) {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.command("set_property", property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.command("set_property", prop, ...args); };
                 } else if (property.startsWith("observe")) {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.observeProperty(property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.observeProperty(prop, ...args); };
                 } else if (property.startsWith("toggle") || property.startsWith("cycle") && property !== "cycle") {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.command("cycle", property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.command("cycle", prop, ...args); };
                 } else if (property.startsWith("adjust") || property.startsWith("add") && property !== "add") {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.command("add", property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.command("add", prop, ...args); };
                 } else if (property.startsWith("scale") || property.startsWith("multiply") && property !== "multiply") {
-                        property = toDashCase(stripFirstWord(property));
-                        return function(...args) { return target.command("multiply", property, ...args); };
+                        let prop = toDashCase(stripFirstWord(property));
+                        return target.cache[property] = function(...args) { return target.command("multiply", prop, ...args); };
                 } else {
-                        property = toDashCase(property);
-                        return function(...args) { return target.command(property, ...args); };
+                        let prop = toDashCase(property);
+                        return target.cache[property] = function(...args) { return target.command(prop, ...args); };
                 }
         }
 
