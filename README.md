@@ -29,6 +29,11 @@ On success, `resolve()` is called with the result data and on failure `reject()`
 * `MPVClient.unmute()`: alias for `MPVClient.setMute(false)`;
 * `MPVClient.loop()`: alias for `MPVClient.setLoop(n < 0 ? "inf" : n)`;
 
+## Magic-less usage
+
+If all the method translation magic is too much for you, and you'd just like to use the explicit commands above only (save for the aliases and observeProperty),
+you can instantiate a `BasicMPVClient` instead of `MPVClient`, which will omit all the magic translations.
+
 ## Example
 
 ```js
