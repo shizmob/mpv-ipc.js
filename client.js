@@ -90,7 +90,7 @@ class MPVClient extends BasicMPVClient {
                                 this.command("unobserve_property", propertyID);
                         }
                 });
-                this.command("observe_property", propertyID, name);
+                return this.command("observe_property", propertyID, name).catch(e => this.proxy.offPropertyChange(handle));
         }
 
         play()   { this.proxy.setPause(false); }
