@@ -3,12 +3,13 @@
 This is a simple, mostly dumb, client for [mpv](https://mpv.io)'s [IPC interface](https://github.com/mpv-player/mpv/blob/master/DOCS/man/ipc.rst).
 It translates any method calls into IPC commands for mpv according to the following rules:
 
-* Explicitly implemented commands like `observeProperty()` (see [commands](#explicit-commands) below) go first;
-* Known IPC commands as listed in the IPC interface (such as `clientName()` -> `client_name`) are then tested;
+* Explicitly implemented commands like `observeProperty()` (see [commands](#explicit-commands) below);
+* IPC-only commands as listed in the [IPC interface documentation](https://github.com/mpv-player/mpv/blob/master/DOCS/man/ipc.rst#commands)
+  (such as `clientName()` -> `client_name`);
 * Methods starting with `on` or `off` are translated into event handler addition/deletion for their corresponding dash-case events;
 * Methods starting with `get`, `set`, `observe`, `toggle`/`cycle`, `adjust`/`add`, `scale`/`multiply` are translated into
   their corresponding `get_property`, `set_property`, `observe_property`, `cycle`, `add` and `multiply` commands with the property translated to dash-case;
-* Finally, the entire command is translated into dash-case and attempted as an IPC-style input command.
+* Finally, the entire command is translated into dash-case and attempted as an IPC input-style command.
 
 The IPC interface is fully asynchronous and every command (except for event handler registration) returns a 
 [Promise](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise).
