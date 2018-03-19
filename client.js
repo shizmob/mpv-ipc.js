@@ -43,7 +43,7 @@ class MPVClient extends BasicMPVClient {
                 this.cache = {};
                 return this.proxy;
         }
-        
+
         _get(target, property, receiver) {
                 if (property in target) {
                         return target[property];
@@ -51,34 +51,34 @@ class MPVClient extends BasicMPVClient {
                         return target.cache[property];
                 } else if (IPC_COMMANDS.includes(property.toLowerCase())) {
                         let prop = toSnakeCase(property);
-                        return target.cache[property] = function(...args) { return target.command(prop, ...args); };
+                        return target.cache[property] = (...args) => target.command(prop, ...args);
                 } else if (property.startsWith("on")) {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.on(prop, ...args); };
+                        return target.cache[property] = (...args) => target.on(prop, ...args);
                 } else if (property.startsWith("off")) {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.off(prop, ...args); };
+                        return target.cache[property] = (...args) => target.off(prop, ...args);
                 } else if (property.startsWith("get")) {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.command("get_property", prop, ...args); };
+                        return target.cache[property] = (...args) => target.command("get_property", prop, ...args);
                 } else if (property.startsWith("set")) {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.command("set_property", prop, ...args); };
+                        return target.cache[property] = (...args) => target.command("set_property", prop, ...args);
                 } else if (property.startsWith("observe")) {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.observeProperty(prop, ...args); };
+                        return target.cache[property] = (...args) => target.observeProperty(prop, ...args);
                 } else if (property.startsWith("toggle") || property.startsWith("cycle") && property !== "cycle") {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.command("cycle", prop, ...args); };
+                        return target.cache[property] = (...args) => target.command("cycle", prop, ...args);
                 } else if (property.startsWith("adjust") || property.startsWith("add") && property !== "add") {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.command("add", prop, ...args); };
+                        return target.cache[property] = (...args) => target.command("add", prop, ...args);
                 } else if (property.startsWith("scale") || property.startsWith("multiply") && property !== "multiply") {
                         let prop = toDashCase(stripFirstWord(property));
-                        return target.cache[property] = function(...args) { return target.command("multiply", prop, ...args); };
+                        return target.cache[property] = (...args) => target.command("multiply", prop, ...args);
                 } else {
                         let prop = toDashCase(property);
-                        return target.cache[property] = function(...args) { return target.command(prop, ...args); };
+                        return target.cache[property] = (...args) => target.command(prop, ...args);
                 }
         }
 
@@ -90,7 +90,7 @@ class MPVClient extends BasicMPVClient {
                                 this.command("unobserve_property", propertyID);
                         }
                 });
-                return this.command("observe_property", propertyID, name).catch(e => this.proxy.offPropertyChange(handle));
+                return this.command("observe_property", propertyID, name).catch(e => { this.proxy.offPropertyChange(handle); throw e; });
         }
 
         play()   { this.proxy.setPause(false); }

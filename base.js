@@ -8,7 +8,7 @@ class BasicMPVClient {
                 this.handlers = {};
                 this.commands = {};
                 this.request_id = 1;
-                this.socket = net.createConnection(socketPath);
+                this.socket = net.connect(socketPath);
                 this.socket.on("data", data => this.handleData(data));
         }
 
@@ -36,14 +36,18 @@ class BasicMPVClient {
                         debug('<- ' + e);
 
                         let evt = JSON.parse(e);
-                        if (evt.request_id) {
-                                let [resolve, reject] = this.commands[evt.request_id];
-                                delete this.commands[evt.request_id];
-                                (evt.error == "success") ? resolve(evt.data) : reject(evt.error);
-                        } else {
-                                this.dispatch("event", evt);
-                                this.dispatch(evt.event, evt);
-                        }
+                        this.handleEvent(evt);
+                }
+        }
+
+        handleEvent(evt) {
+                if (evt.request_id) {
+                        let [resolve, reject] = this.commands[evt.request_id];
+                        delete this.commands[evt.request_id];
+                        (evt.error == "success") ? resolve(evt.data) : reject(evt.error);
+                } else {
+                        this.dispatch("event", evt);
+                        this.dispatch(evt.event, evt);
                 }
         }
 
