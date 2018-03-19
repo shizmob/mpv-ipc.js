@@ -1,8 +1,11 @@
 {
   "name": "mpv-ipc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MPV (https://mpv.io) IPC interface library",
   "main": "index.js",
+  "browser": {
+    "net": "net-websockets"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
