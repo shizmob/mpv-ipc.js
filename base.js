@@ -8,8 +8,14 @@ class BasicMPVClient {
                 this.handlers = {};
                 this.commands = {};
                 this.request_id = 1;
-                this.socket = net.connect(socketPath);
-                this.socket.on("data", data => this.handleData(data));
+                if (socketPath instanceof net.Socket) {
+                        this.socket = socketPath;
+                } else {
+                        this.socket = net.connect(socketPath);
+                }
+                this.socket.on('connect', () => this.emit('connect'));
+                this.socket.on('data', data => this.handleData(data));
+                this.socket.on('close', (e) => this.emit('close', e))
         }
 
         on(event, handler) {

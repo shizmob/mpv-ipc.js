@@ -1,6 +1,6 @@
 {
   "name": "mpv-ipc",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MPV (https://mpv.io) IPC interface library",
   "main": "index.js",
   "browser": {
